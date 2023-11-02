@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <input type="text" id="todoInput" placeholder="Enter a new todo">
+    <button id="addTodo">Add</button>
+    <ul id="todoList"></ul>
+
+    <script>
+        // Function to add a new todo item
+        function addTodo() {
+            const todoInput = document.getElementById('todoInput');
+            const todoText = todoInput.value.trim(); // Get the input value and trim any leading/trailing spaces
+
+            if (todoText) {
+                const todoList = document.getElementById('todoList');
+                const listItem = document.createElement('li');
+                listItem.textContent = todoText;
+                todoList.appendChild(listItem);
+
+                // Store the updated todo list in a cookie
+                updateTodoListInCookie(todoList);
+
+                todoInput.value = ''; // Clear the input field
+            }
+        }
+
+        // Function to update the todo list in a cookie
+        function updateTodoListInCookie(todoList) {
+            const todos = Array.from(todoList.children).map(item => item.textContent);
+            const todosJSON = JSON.stringify(todos);
+
+            // Store the todos in a cookie with a specific name
+            document.cookie = `todoList=${todosJSON}; expires=Sun, 1 Jan 2023 00:00:00 UTC; path=/`;
+        }
+
+        // Function to load the todo list from a cookie when the page loads
+        function loadTodoListFromCookie() {
+            const cookie = document.cookie;
+            const todoList = document.getElementById('todoList');
+            
+            // Look for the "todoList" cookie and load the data if it exists
+            const matches = cookie.match(/todoList=([^;]*)/);
+            if (matches) {
+                const todosJSON = matches[1];
+                const todos = JSON.parse(todosJSON);
+
+                todos.forEach(todoText => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = todoText;
+                    todoList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Add a click event listener to the "Add" button
+        const addTodoButton = document.getElementById('addTodo');
+        addTodoButton.addEventListener('click', addTodo);
+
+        // Load the todo list from the cookie when the page loads
+        loadTodoListFromCookie();
+    </script>
+</body>
+
+</html>
